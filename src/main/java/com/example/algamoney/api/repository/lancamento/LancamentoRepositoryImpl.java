@@ -22,6 +22,7 @@ import com.example.algamoney.api.model.Lancamento_;
 import com.example.algamoney.api.model.Pessoa_;
 import com.example.algamoney.api.repository.filter.LancamentoFilter;
 import com.example.algamoney.api.repository.projection.ResumoLancamento;
+import com.example.algamoney.api.repository.util.FilterUtils;
 
 public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 	
@@ -38,7 +39,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 		criteria.where(predicates);
 		
 		TypedQuery<Lancamento> query = manager.createQuery(criteria);
-		adicionarRestricoesDePaginacao(query, pageable);
+		FilterUtils.adicionarRestricoesDePaginacao(query, pageable);
 		
 		return new PageImpl<>(query.getResultList(), pageable, total(lancamentoFilter));
 	}
@@ -61,7 +62,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 		
 		TypedQuery<ResumoLancamento> query = manager.createQuery(criteria);
 		
-		adicionarRestricoesDePaginacao(query, pageable);
+		FilterUtils.adicionarRestricoesDePaginacao(query, pageable);
 		
 		return new PageImpl<>(query.getResultList(), pageable, total(lancamentoFilter));
 	}
@@ -88,14 +89,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 		return predicates.toArray(new Predicate[predicates.size()]);
 	}
 
-	private void adicionarRestricoesDePaginacao(TypedQuery<?> query, Pageable pageable) {
-		int paginaAtual = pageable.getPageNumber();
-		int totalRegistrosPorPagina = pageable.getPageSize();
-		int primeiroRegistroDaPagina = paginaAtual * totalRegistrosPorPagina;
-		
-		query.setFirstResult(primeiroRegistroDaPagina);
-		query.setMaxResults(totalRegistrosPorPagina);
-	}
+
 	
 	private Long total(LancamentoFilter lancamentoFilter) {
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
